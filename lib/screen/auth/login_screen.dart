@@ -128,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .size
           .width,
       child: GFButton(size: GFSize.LARGE, text: 'Login', onPressed: () {
-        showSnackBarLogin(context);
+        GoRouter.of(context).pushReplacementNamed(AppRoutes.homescreen);
       }),
     );
   }
