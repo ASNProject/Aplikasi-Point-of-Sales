@@ -64,7 +64,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _sideMenu() {
     return Column(
       children: [
-        const Text('POS APP'),
+        const SizedBox(height: 20,),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 9),
+          child: Text(
+            'POS APP',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+
+          ),
+        ),
         const SizedBox(
           height: 30,
         ),

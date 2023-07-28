@@ -7,7 +7,7 @@ abstract class ListProductState extends Equatable {}
 
 class ListProductLoadingState extends ListProductState {
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ListProductLoadedState extends ListProductState {

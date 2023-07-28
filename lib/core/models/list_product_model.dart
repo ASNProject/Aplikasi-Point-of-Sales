@@ -1,7 +1,7 @@
 class ListProductModel {
   int? id;
   String? product;
-  String? price;
+  int? price;
   String? description;
 
   ListProductModel({
