@@ -30,22 +30,22 @@ class _CashierScreenState extends State<CashierScreen> {
                   scrollDirection: Axis.horizontal,
                   children: [
                     _itemTab(
-                      icon: 'icons/icon-burger.png',
+                      icon: 'assets/icons/icon-burger.png',
                       title: 'Burger',
                       isActive: true,
                     ),
                     _itemTab(
-                      icon: 'icons/icon-noodles.png',
+                      icon: 'assets/icons/icon-noodles.png',
                       title: 'Noodles',
                       isActive: false,
                     ),
                     _itemTab(
-                      icon: 'icons/icon-drinks.png',
+                      icon: 'assets/icons/icon-drinks.png',
                       title: 'Drinks',
                       isActive: false,
                     ),
                     _itemTab(
-                      icon: 'icons/icon-desserts.png',
+                      icon: 'assets/icons/icon-desserts.png',
                       title: 'Desserts',
                       isActive: false,
                     )
@@ -58,73 +58,73 @@ class _CashierScreenState extends State<CashierScreen> {
                   childAspectRatio: (1 / 1.2),
                   children: [
                     _item(
-                      image: 'items/1.png',
+                      image: 'assets/items/1.png',
                       title: 'Original Burger',
                       price: '\$5.99',
                       item: '11 item',
                     ),
                     _item(
-                      image: 'items/2.png',
+                      image: 'assets/items/2.png',
                       title: 'Double Burger',
                       price: '\$10.99',
                       item: '10 item',
                     ),
                     _item(
-                      image: 'items/3.png',
+                      image: 'assets/items/3.png',
                       title: 'Cheese Burger',
                       price: '\$6.99',
                       item: '7 item',
                     ),
                     _item(
-                      image: 'items/4.png',
+                      image: 'assets/items/4.png',
                       title: 'Double Cheese Burger',
                       price: '\$12.99',
                       item: '20 item',
                     ),
                     _item(
-                      image: 'items/5.png',
+                      image: 'assets/items/5.png',
                       title: 'Spicy Burger',
                       price: '\$7.39',
                       item: '12 item',
                     ),
                     _item(
-                      image: 'items/6.png',
+                      image: 'assets/items/6.png',
                       title: 'Special Black Burger',
                       price: '\$7.39',
                       item: '39 item',
                     ),
                     _item(
-                      image: 'items/7.png',
+                      image: 'assets/items/7.png',
                       title: 'Special Cheese Burger',
                       price: '\$8.00',
                       item: '2 item',
                     ),
                     _item(
-                      image: 'items/8.png',
+                      image: 'assets/items/8.png',
                       title: 'Jumbo Cheese Burger',
                       price: '\$15.99',
                       item: '2 item',
                     ),
                     _item(
-                      image: 'items/9.png',
+                      image: 'assets/items/9.png',
                       title: 'Spicy Burger',
                       price: '\$7.39',
                       item: '12 item',
                     ),
                     _item(
-                      image: 'items/10.png',
+                      image: 'assets/items/10.png',
                       title: 'Special Black Burger',
                       price: '\$7.39',
                       item: '39 item',
                     ),
                     _item(
-                      image: 'items/11.png',
+                      image: 'assets/items/11.png',
                       title: 'Special Cheese Burger',
                       price: '\$8.00',
                       item: '2 item',
                     ),
                     _item(
-                      image: 'items/12.png',
+                      image: 'assets/items/12.png',
                       title: 'Jumbo Cheese Burger',
                       price: '\$15.99',
                       item: '2 item',
@@ -150,25 +150,25 @@ class _CashierScreenState extends State<CashierScreen> {
                 child: ListView(
                   children: [
                     _itemOrder(
-                      image: 'items/1.png',
+                      image: 'assets/items/1.png',
                       title: 'Orginal Burger',
                       qty: '2',
                       price: '\$5.99',
                     ),
                     _itemOrder(
-                      image: 'items/2.png',
+                      image: 'assets/items/2.png',
                       title: 'Double Burger',
                       qty: '3',
                       price: '\$10.99',
                     ),
                     _itemOrder(
-                      image: 'items/6.png',
+                      image: 'assets/items/6.png',
                       title: 'Special Black Burger',
                       qty: '2',
                       price: '\$8.00',
                     ),
                     _itemOrder(
-                      image: 'items/4.png',
+                      image: 'assets/items/4.png',
                       title: 'Special Cheese Burger',
                       qty: '2',
                       price: '\$12.99',
