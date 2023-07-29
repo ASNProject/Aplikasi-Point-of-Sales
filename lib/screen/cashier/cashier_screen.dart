@@ -270,7 +270,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                             children: [
                               Icon(Icons.print, size: 16),
                               SizedBox(width: 6),
-                              Text('Cetak')
+                              Text('Bayar & Cetak')
                             ],
                           ),
                         ),

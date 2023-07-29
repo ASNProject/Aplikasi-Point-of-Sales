@@ -64,19 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _sideMenu() {
     return Column(
       children: [
-        const SizedBox(height: 20,),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 9),
-          child: Text(
-            'POS APP',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-
-          ),
+        const SizedBox(
+          height: 20,
         ),
+        _logo(),
         const SizedBox(
           height: 30,
         ),
@@ -84,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView(
             children: [
               _itemMenu(
-                menu: 'Cashier',
+                menu: 'Kasir',
                 icon: Icons.computer,
               ),
               _itemMenu(
@@ -145,6 +136,34 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _logo() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            color: Colors.deepOrangeAccent,
+          ),
+          child: const Icon(
+            Icons.shopping_basket,
+            color: Colors.white,
+            size: 14,
+          ),
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          'POS App',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 8,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
