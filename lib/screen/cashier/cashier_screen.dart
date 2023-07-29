@@ -38,10 +38,13 @@ class CashierScreenContent extends StatefulWidget {
 
 class _CashierScreenContentState extends State<CashierScreenContent> {
   final TextEditingController _priceValue = TextEditingController();
+  final TextEditingController _totalPaidController = TextEditingController();
   List<String> items = [];
   List<List<dynamic>> saveData = [];
   int? sumInput;
   String initialPriceValue = '';
+  double totalPaid = 0.0;
+  String initialTotalPaid = '';
 
   @override
   void dispose() {
@@ -56,6 +59,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+    _totalPaidController.text = '';
   }
 
   @override
@@ -163,7 +167,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 2),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(14),
                     color: const Color(0xff1f2029),
@@ -190,21 +194,44 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Dibayar',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                            const Expanded(
+                              child: Text(
+                                'Dibayar',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
                             ),
-                            Text(
-                              '\$4.32',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
+                            Expanded(
+                              child: ConstrainedBox(
+                                constraints:
+                                    const BoxConstraints(maxHeight: 35),
+                                child: TextFormField(
+                                  controller: _totalPaidController,
+                                  textAlign: TextAlign.end,
+                                  decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 12, horizontal: 5),
+                                      fillColor: Colors.white,
+                                      filled: true,
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8))),
+                                  onChanged: (value) {
+                                    try {
+                                      setState(() {
+                                        totalPaid = double.parse(value);
+                                        initialTotalPaid = value;
+                                      });
+                                    } catch (e) {}
+                                  },
+                                ),
+                              ),
+                            )
                           ],
                         ),
                         Container(
@@ -213,21 +240,16 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                           width: double.infinity,
                           color: Colors.white,
                         ),
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Kembali',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
-                            Text(
-                              '\$44.64',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
+                            _handleRefundAmount(totalAmount, totalPaid)
                           ],
                         ),
                         const SizedBox(height: 30),
@@ -240,7 +262,9 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            _clearData();
+                          },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -260,9 +284,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                             ),
                           ),
                           onPressed: () {
-                            setState(() {
-                              saveData = [];
-                            });
+                            _clearData();
                           },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -580,7 +602,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff1f2029),
+                backgroundColor: const Color(0xff1f2029),
               ),
               child: const Text('Batal'),
             ),
@@ -621,6 +643,14 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     });
   }
 
+  void _clearData() {
+    setState(() {
+      saveData = [];
+      totalPaid = 0.0;
+      _totalPaidController.text = '';
+    });
+  }
+
   void _handleSaveData(String name) {
     double totalPrice =
         double.parse(sumInput.toString()) * double.parse(initialPriceValue);
@@ -629,5 +659,13 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     _addItem(totalPrice.toString());
     _saveItem(items);
     print(saveData);
+  }
+
+  Widget _handleRefundAmount(double totalAmount, double payment) {
+    double refaundAmount = payment - totalAmount;
+    return Text(
+      intl.NumberFormat.simpleCurrency(locale: 'id_ID').format(refaundAmount),
+      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+    );
   }
 }
