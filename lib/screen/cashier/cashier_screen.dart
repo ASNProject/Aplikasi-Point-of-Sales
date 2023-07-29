@@ -111,7 +111,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                         return Padding(
                           padding: const EdgeInsets.all(1),
                           child: _item(
-                            image: 'assets/items/1.png',
+                            image: '${listProduct[index].image}',
                             title: '${listProduct[index].product}',
                             price: intl.NumberFormat.simpleCurrency(
                                     locale: 'id_ID')
@@ -146,13 +146,16 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                     String product;
                     String total;
                     double amount;
+                    String image;
+                    String? valueIndex;
                     if (saveData.isNotEmpty) {
                       List<dynamic> rowData = saveData[index];
                       product = rowData[0];
                       total = rowData[1];
+                      image = rowData[3];
                       amount = double.parse(rowData[2].toString());
                       return _itemOrder(
-                        image: 'assets/items/1.png',
+                        image: image,
                         title: product,
                         qty: total,
                         price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
@@ -332,7 +335,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
-                  image: AssetImage(image),
+                  image: NetworkImage(image),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -384,7 +387,8 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   }) {
     return InkWell(
       onTap: () {
-        _showInputDialogOrder(context, title);
+        print(image);
+        _showInputDialogOrder(context, title, image);
         _priceValue.text = parseFormattedCurrencyToInt(price).toString();
         initialPriceValue =
             parseFormattedCurrencyToInt(price.toString()).toString();
@@ -408,7 +412,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     image: DecorationImage(
-                      image: AssetImage(image),
+                      image: NetworkImage(image),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -514,7 +518,8 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
         ));
   }
 
-  Future<void> _showInputDialogOrder(BuildContext context, String name) async {
+  Future<void> _showInputDialogOrder(
+      BuildContext context, String name, String image) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -575,7 +580,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
             ),
             ElevatedButton(
               onPressed: () {
-                _handleSaveData(name);
+                _handleSaveData(name, image);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -651,12 +656,13 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     });
   }
 
-  void _handleSaveData(String name) {
+  void _handleSaveData(String name, String image) {
     double totalPrice =
         double.parse(sumInput.toString()) * double.parse(initialPriceValue);
     _addItem(name);
     _addItem(sumInput.toString());
     _addItem(totalPrice.toString());
+    _addItem(image);
     _saveItem(items);
     print(saveData);
   }
