@@ -5,6 +5,7 @@ import 'package:aplikasi_point_of_sales/core/models/list_product_model.dart';
 import 'package:aplikasi_point_of_sales/core/repo/repositories.dart';
 import 'package:counter/counter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -17,7 +18,10 @@ class CashierScreen extends StatelessWidget {
       providers: [
         BlocProvider<ListProductBloc>(
           create: (BuildContext context) =>
-              ListProductBloc(ListProductRepository()),
+              ListProductBloc(ListProductRepository())
+                ..add(
+                  LoadListProductEvent(),
+                ),
         ),
       ],
       child: const CashierScreenContent(),
@@ -35,11 +39,9 @@ class CashierScreenContent extends StatefulWidget {
 class _CashierScreenContentState extends State<CashierScreenContent> {
   final TextEditingController _priceValue = TextEditingController();
   List<String> items = [];
-  List<List> saveData = [];
-  String priceInput = '';
+  List<List<dynamic>> saveData = [];
   int? sumInput;
   String initialPriceValue = '';
-  String? previousPriceValue;
 
   @override
   void dispose() {
@@ -50,12 +52,18 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
+    double totalAmount = 0.0;
+    for (List<dynamic> rowData in saveData) {
+      totalAmount += double.parse(rowData[2].toString());
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,57 +74,53 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
             children: [
               _topMenu(
                 title: 'Toko Bangunan Dua Putri',
-                subTitle: '${DateTime.now()}',
+                subTitle:
+                    intl.DateFormat('dd-MMMM-yyyy').format(DateTime.now()),
                 action: _search(),
               ),
               const SizedBox(
                 height: 20,
               ),
-              BlocProvider(
-                create: (context) => ListProductBloc(
-                  ListProductRepository(),
-                )..add(LoadListProductEvent()),
-                child: BlocBuilder<ListProductBloc, ListProductState>(
-                  builder: (context, state) {
-                    if (state is ListProductLoadingState) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (state is ListProductErrorState) {
-                      return Center(
-                        child: Text(state.error),
-                      );
-                    }
-                    if (state is ListProductLoadedState) {
-                      List<ListProductModel> listProduct = state.listProducts;
-                      return Expanded(
-                          child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: listProduct.length,
-                        itemBuilder: (_, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(1),
-                            child: _item(
-                              image: 'assets/items/1.png',
-                              title: '${listProduct[index].product}',
-                              price:
-                                  intl.NumberFormat.simpleCurrency(locale: 'id_ID')
-                                      .format(listProduct[index].price),
-                              item: '${listProduct[index].description}',
-                            ),
-                          );
-                        },
-                      ));
-                    }
-                    return Container();
-                  },
-                ),
-              )
+              BlocBuilder<ListProductBloc, ListProductState>(
+                builder: (context, state) {
+                  if (state is ListProductLoadingState) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (state is ListProductErrorState) {
+                    return Center(
+                      child: Text(state.error),
+                    );
+                  }
+                  if (state is ListProductLoadedState) {
+                    List<ListProductModel> listProduct = state.listProducts;
+                    return Expanded(
+                        child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemCount: listProduct.length,
+                      itemBuilder: (_, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(1),
+                          child: _item(
+                            image: 'assets/items/1.png',
+                            title: '${listProduct[index].product}',
+                            price: intl.NumberFormat.simpleCurrency(
+                                    locale: 'id_ID')
+                                .format(listProduct[index].price),
+                            item: '${listProduct[index].description}',
+                          ),
+                        );
+                      },
+                    ));
+                  }
+                  return Container();
+                },
+              ),
             ],
           ),
         ),
@@ -127,38 +131,33 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
             children: [
               _topMenu(
                 title: 'Pembelian',
-                subTitle: 'Pembelian dapat disesuaikan dengan kebutuhan',
+                subTitle: 'Harga pembelian dapat disesuaikan dengan kebutuhan',
                 action: Container(),
               ),
               const SizedBox(height: 10),
               Expanded(
-                child: ListView(
-                  children: [
-                    _itemOrder(
-                      image: 'assets/items/1.png',
-                      title: 'Orginal Burger',
-                      qty: '2',
-                      price: '\$5.99',
-                    ),
-                    _itemOrder(
-                      image: 'assets/items/2.png',
-                      title: 'Double Burger',
-                      qty: '3',
-                      price: '\$10.99',
-                    ),
-                    _itemOrder(
-                      image: 'assets/items/6.png',
-                      title: 'Special Black Burger',
-                      qty: '2',
-                      price: '\$8.00',
-                    ),
-                    _itemOrder(
-                      image: 'assets/items/4.png',
-                      title: 'Special Cheese Burger',
-                      qty: '2',
-                      price: '\$12.99',
-                    ),
-                  ],
+                child: ListView.builder(
+                  itemCount: saveData.length,
+                  itemBuilder: (_, index) {
+                    String product;
+                    String total;
+                    double amount;
+                    if (saveData.isNotEmpty) {
+                      List<dynamic> rowData = saveData[index];
+                      product = rowData[0];
+                      total = rowData[1];
+                      amount = double.parse(rowData[2].toString());
+                      return _itemOrder(
+                        image: 'assets/items/1.png',
+                        title: product,
+                        qty: total,
+                        price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
+                            .format(amount),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
                 ),
               ),
               Expanded(
@@ -172,18 +171,19 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        const Row(
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Sub Total',
+                            const Text(
+                              'Total',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
                             Text(
-                              '\$40.32',
-                              style: TextStyle(
+                              intl.NumberFormat.simpleCurrency(locale: 'id_ID')
+                                  .format(totalAmount),
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
                             ),
@@ -194,7 +194,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Tax',
+                              'Dibayar',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
@@ -217,7 +217,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Total',
+                              'Kembali',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),
@@ -259,7 +259,11 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              saveData = [];
+                            });
+                          },
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -355,9 +359,10 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
       onTap: () {
         _showInputDialogOrder(context, title);
         _priceValue.text = parseFormattedCurrencyToInt(price).toString();
-        initialPriceValue = parseFormattedCurrencyToInt(price.toString()).toString();
-          items = [];
-       },
+        initialPriceValue =
+            parseFormattedCurrencyToInt(price.toString()).toString();
+        items = [];
+      },
       child: Container(
         margin: const EdgeInsets.only(right: 20, bottom: 20),
         padding: const EdgeInsets.all(12),
@@ -420,39 +425,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
       ),
     );
   }
-
-  // Widget _itemTab(
-  //     {required String icon, required String title, required bool isActive}) {
-  //   return Container(
-  //     width: 180,
-  //     margin: const EdgeInsets.only(right: 26),
-  //     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(10),
-  //       color: const Color(0xff1f2029),
-  //       border: isActive
-  //           ? Border.all(color: Colors.deepOrangeAccent, width: 3)
-  //           : Border.all(color: const Color(0xff1f2029), width: 3),
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         Image.asset(
-  //           icon,
-  //           width: 38,
-  //         ),
-  //         const SizedBox(width: 8),
-  //         Text(
-  //           title,
-  //           style: const TextStyle(
-  //             fontSize: 14,
-  //             color: Colors.white,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _topMenu({
     required String title,
@@ -576,11 +548,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
             ),
             ElevatedButton(
               onPressed: () {
-                _addItem(name);
-                _addItem(sumInput.toString());
-                _addItem(initialPriceValue);
-                _saveItem(items);
-                print(saveData);
+                _handleSaveData(name);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
@@ -600,7 +568,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     return intValue;
   }
 
-
   void _addItem(String value) {
     setState(() {
       items.add(value);
@@ -611,5 +578,15 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     setState(() {
       saveData.add(data);
     });
+  }
+
+  void _handleSaveData(String name) {
+    double totalPrice =
+        double.parse(sumInput.toString()) * double.parse(initialPriceValue);
+    _addItem(name);
+    _addItem(sumInput.toString());
+    _addItem(totalPrice.toString());
+    _saveItem(items);
+    print(saveData);
   }
 }
