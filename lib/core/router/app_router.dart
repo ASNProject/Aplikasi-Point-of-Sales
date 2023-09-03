@@ -1,6 +1,4 @@
 import 'package:aplikasi_point_of_sales/core/router/app_routes.dart';
-import 'package:aplikasi_point_of_sales/screen/auth/login_screen.dart';
-import 'package:aplikasi_point_of_sales/screen/auth/register_screen.dart';
 import 'package:aplikasi_point_of_sales/screen/home/homescreen.dart';
 import 'package:go_router/go_router.dart';
 

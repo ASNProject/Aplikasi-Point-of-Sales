@@ -1,12 +1,14 @@
 import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_bloc.dart';
 import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_event.dart';
 import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_state.dart';
+import 'package:aplikasi_point_of_sales/core/models/hive/product_model.dart';
 import 'package:aplikasi_point_of_sales/core/models/list_product_model.dart';
 import 'package:aplikasi_point_of_sales/core/repo/repositories.dart';
 import 'package:counter/counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart' as intl;
 
 class CashierScreen extends StatelessWidget {
@@ -46,6 +48,8 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   double totalPaid = 0.0;
   String initialTotalPaid = '';
 
+  late final Box dataBox;
+
   @override
   void dispose() {
     _priceValue.dispose();
@@ -60,6 +64,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
       DeviceOrientation.landscapeLeft,
     ]);
     _totalPaidController.text = '';
+    dataBox = Hive.box('data_box');
   }
 
   @override
@@ -85,46 +90,9 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
               const SizedBox(
                 height: 20,
               ),
-              BlocBuilder<ListProductBloc, ListProductState>(
-                builder: (context, state) {
-                  if (state is ListProductLoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (state is ListProductErrorState) {
-                    return Center(
-                      child: Text(state.error),
-                    );
-                  }
-                  if (state is ListProductLoadedState) {
-                    List<ListProductModel> listProduct = state.listProducts;
-                    return Expanded(
-                        child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                        childAspectRatio: 0.8,
-                      ),
-                      itemCount: listProduct.length,
-                      itemBuilder: (_, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(1),
-                          child: _item(
-                            image: '${listProduct[index].image}',
-                            title: '${listProduct[index].product}',
-                            price: intl.NumberFormat.simpleCurrency(
-                                    locale: 'id_ID')
-                                .format(listProduct[index].price),
-                            item: '${listProduct[index].description}',
-                          ),
-                        );
-                      },
-                    ));
-                  }
-                  return Container();
-                },
-              ),
+              //MODE
+              // _buildOnlineMode()
+              _buildOfflineMode(),
             ],
           ),
         ),
@@ -147,7 +115,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                     String total;
                     double amount;
                     String image;
-                    String? valueIndex;
                     if (saveData.isNotEmpty) {
                       List<dynamic> rowData = saveData[index];
                       product = rowData[0];
@@ -168,137 +135,146 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                 ),
               ),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.symmetric(vertical: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: const Color(0xff1f2029),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              intl.NumberFormat.simpleCurrency(locale: 'id_ID')
-                                  .format(totalAmount),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                'Dibayar',
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.symmetric(vertical: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      color: const Color(0xff1f2029),
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Total',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ),
-                            ),
-                            Expanded(
-                              child: ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxHeight: 35),
-                                child: TextFormField(
-                                  controller: _totalPaidController,
-                                  textAlign: TextAlign.end,
-                                  decoration: InputDecoration(
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              vertical: 12, horizontal: 5),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8))),
-                                  onChanged: (value) {
-                                    try {
-                                      setState(() {
-                                        totalPaid = double.parse(value);
-                                        initialTotalPaid = value;
-                                      });
-                                    } catch (e) {}
-                                  },
+                              Text(
+                                intl.NumberFormat.simpleCurrency(
+                                        locale: 'id_ID')
+                                    .format(totalAmount),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Expanded(
+                                child: Text(
+                                  'Dibayar',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
                                 ),
                               ),
-                            )
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 20),
-                          height: 2,
-                          width: double.infinity,
-                          color: Colors.white,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Kembali',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            _handleRefundAmount(totalAmount, totalPaid)
-                          ],
-                        ),
-                        const SizedBox(height: 30),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.deepOrange,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () {
-                            _clearData();
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.print, size: 16),
-                              SizedBox(width: 6),
-                              Text('Bayar & Cetak')
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 35),
+                                  child: TextFormField(
+                                    controller: _totalPaidController,
+                                    textAlign: TextAlign.end,
+                                    decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 12, horizontal: 5),
+                                        fillColor: Colors.white,
+                                        filled: true,
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8))),
+                                    onChanged: (value) {
+                                      try {
+                                        setState(() {
+                                          totalPaid = double.parse(value);
+                                          initialTotalPaid = value;
+                                        });
+                                      } catch (e) {
+                                        e.toString();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              )
                             ],
                           ),
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.deepOrange,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 20),
+                            height: 2,
+                            width: double.infinity,
+                            color: Colors.white,
                           ),
-                          onPressed: () {
-                            _clearData();
-                          },
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Icon(Icons.close, size: 16),
-                              SizedBox(width: 6),
-                              Text('Clear')
+                              const Text(
+                                'Kembali',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              _handleRefundAmount(totalAmount, totalPaid)
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 30),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.deepOrange,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              _clearData();
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.print, size: 16),
+                                SizedBox(width: 6),
+                                Text('Bayar & Cetak')
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.deepOrange,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              _clearData();
+                            },
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.close, size: 16),
+                                SizedBox(width: 6),
+                                Text('Clear')
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -387,7 +363,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   }) {
     return InkWell(
       onTap: () {
-        print(image);
         _showInputDialogOrder(context, title, image);
         _priceValue.text = parseFormattedCurrencyToInt(price).toString();
         initialPriceValue =
@@ -407,7 +382,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
             Expanded(
               flex: 3,
               child: AspectRatio(
-                aspectRatio: 1,
+                aspectRatio: 5,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
@@ -664,7 +639,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     _addItem(totalPrice.toString());
     _addItem(image);
     _saveItem(items);
-    print(saveData);
   }
 
   Widget _handleRefundAmount(double totalAmount, double payment) {
@@ -672,6 +646,88 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     return Text(
       intl.NumberFormat.simpleCurrency(locale: 'id_ID').format(refaundAmount),
       style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+    );
+  }
+
+  ///ONLINE OR OFFLINE
+  // Online
+  _buildOnlineMode() {
+    return BlocBuilder<ListProductBloc, ListProductState>(
+      builder: (context, state) {
+        if (state is ListProductLoadingState) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (state is ListProductErrorState) {
+          return Center(
+            child: Text(state.error),
+          );
+        }
+        if (state is ListProductLoadedState) {
+          List<ListProductModel> listProduct = state.listProducts;
+          return Expanded(
+              child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: listProduct.length,
+            itemBuilder: (_, index) {
+              return Padding(
+                padding: const EdgeInsets.all(1),
+                child: _item(
+                  image: '${listProduct[index].image}',
+                  title: '${listProduct[index].product}',
+                  price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
+                      .format(listProduct[index].price),
+                  item: '${listProduct[index].description}',
+                ),
+              );
+            },
+          ));
+        }
+        return Container();
+      },
+    );
+  }
+
+  // OfflineMode
+  _buildOfflineMode() {
+    return ValueListenableBuilder(
+      valueListenable: dataBox.listenable(),
+      builder: (context, Box<dynamic> box, child) {
+        if (box.isEmpty) {
+          return const Center(
+            child: Text(
+              'Database kosong',
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        } else {
+          return Expanded(
+              child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: dataBox.length,
+            itemBuilder: (_, index) {
+              var getData = box.getAt(index) as ProductModel;
+              return Padding(
+                padding: const EdgeInsets.all(1),
+                child: _item(
+                  image: getData.imageUrl.toString(),
+                  title: getData.name.toString(),
+                  price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
+                      .format(double.parse(getData.price!)),
+                  item: getData.description.toString(),
+                ),
+              );
+            },
+          ));
+        }
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:aplikasi_point_of_sales/screen/cashier/cashier_screen.dart';
+import 'package:aplikasi_point_of_sales/screen/menu/menu_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Cashier':
         return const CashierScreen();
       case 'Menu':
-        return Container();
+        return const MenuScreen();
       case 'History':
         return Container();
 
