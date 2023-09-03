@@ -45,9 +45,17 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
   final descriptionProductController = TextEditingController();
   final categotyProductController = TextEditingController();
   final imageProductController = TextEditingController();
+  bool _validate = false;
   bool isEditing = false;
 
   late final Box dataBox;
+
+  @override
+  void dispose() {
+    nameProductController.dispose();
+    priceProductController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -91,72 +99,101 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
         const SizedBox(
           height: 16,
         ),
-        _buildRowData(
-          leftWidget: const Text(
-            'Nama Produk',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          rightWidget: Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 35),
-              child: TextFormField(
-                textDirection: TextDirection.rtl,
-                textAlignVertical: TextAlignVertical.top,
-                controller: nameProductController,
-                textAlign: TextAlign.end,
-                decoration: InputDecoration(
-                    hintTextDirection: TextDirection.rtl,
-                    hintText: 'Masukkan nama produk',
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama produk harus diisi';
-                  }
-                  return null;
-                },
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildRowData(
+              leftWidget: const Text(
+                'Nama Produk',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              rightWidget: Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 35),
+                  child: TextFormField(
+                    textDirection: TextDirection.rtl,
+                    textAlignVertical: TextAlignVertical.top,
+                    controller: nameProductController,
+                    textAlign: TextAlign.end,
+                    decoration: InputDecoration(
+                      hintTextDirection: TextDirection.rtl,
+                      hintText: 'Masukkan nama produk',
+                      hintStyle: const TextStyle(fontWeight: FontWeight.w200),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 5),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            if (_validate)
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .1,
+                  ),
+                  const Text(
+                    'Nama produk harus diisi',
+                    style: TextStyle(color: Colors.amber),
+                  ),
+                ],
+              ),
+          ],
         ),
         const SizedBox(
           height: 16,
         ),
-        _buildRowData(
-          leftWidget: const Text(
-            'Harga Produk',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          rightWidget: Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 35),
-              child: TextFormField(
-                textDirection: TextDirection.rtl,
-                textAlignVertical: TextAlignVertical.top,
-                controller: priceProductController,
-                textAlign: TextAlign.end,
-                decoration: InputDecoration(
-                    hintTextDirection: TextDirection.rtl,
-                    hintText: 'Masukkan harga produk',
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
-                    fillColor: Colors.white,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Harga produk harus diisi';
-                  }
-                  return null;
-                },
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildRowData(
+              leftWidget: const Text(
+                'Harga Produk',
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              rightWidget: Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 35),
+                  child: TextFormField(
+                    textDirection: TextDirection.rtl,
+                    textAlignVertical: TextAlignVertical.top,
+                    controller: priceProductController,
+                    textAlign: TextAlign.end,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintTextDirection: TextDirection.rtl,
+                      hintText: 'Masukkan harga produk',
+                      hintStyle: const TextStyle(fontWeight: FontWeight.w200),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 5),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            if (_validate)
+              Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .1,
+                  ),
+                  const Text(
+                    'Harga produk harus diisi',
+                    style: TextStyle(color: Colors.amber),
+                  ),
+                ],
+              ),
+          ],
         ),
         const SizedBox(
           height: 16,
@@ -177,6 +214,7 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
                 decoration: InputDecoration(
                     hintTextDirection: TextDirection.rtl,
                     hintText: 'Masukkan deskripsi produk',
+                    hintStyle: const TextStyle(fontWeight: FontWeight.w200),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
                     fillColor: Colors.white,
@@ -206,6 +244,7 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
                 decoration: InputDecoration(
                     hintTextDirection: TextDirection.rtl,
                     hintText: 'Masukkan harga produk',
+                    hintStyle: const TextStyle(fontWeight: FontWeight.w200),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
                     fillColor: Colors.white,
@@ -235,6 +274,7 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
                 decoration: InputDecoration(
                     hintTextDirection: TextDirection.rtl,
                     hintText: 'Masukkan link gambar produk',
+                    hintStyle: const TextStyle(fontWeight: FontWeight.w200),
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
                     fillColor: Colors.white,
@@ -246,13 +286,54 @@ class _MenuScreenContentState extends State<MenuScreenContent> {
           ),
         ),
         const SizedBox(
+          height: 16,
+        ),
+        const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '*Catatan',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.italic),
+            ),
+            Text(
+              '1. Nama dan harga produk harus diisi',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w100,
+              ),
+            ),
+            Text(
+              '2. Isi harga produk dengan bilang/angka tanpa koma atau titik',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w100,
+              ),
+            ),
+            Text(
+              '3. Isi gambar dengan link contoh: https://img.iproperty.com.my/angel-legacy/1110x624-crop/static/2021/05/Paku-Jenis-Ukuran-dan-Harga-Paku-2021.png',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w100,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
           height: 32,
         ),
         Align(
           alignment: Alignment.centerRight,
           child: ElevatedButton(
             onPressed: () async {
-              _createProduct();
+              setState(() {
+                nameProductController.text.isEmpty
+                    ? _validate = true
+                    : _validate = false;
+              });
+              _validate == false ? _createProduct() : null;
             },
             child: const Text('SIMPAN PRODUK'),
           ),
