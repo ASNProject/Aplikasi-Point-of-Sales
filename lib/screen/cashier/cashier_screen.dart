@@ -1,9 +1,9 @@
-import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_bloc.dart';
-import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_event.dart';
-import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_state.dart';
-import 'package:aplikasi_point_of_sales/core/models/hive/product_model.dart';
-import 'package:aplikasi_point_of_sales/core/models/list_product_model.dart';
-import 'package:aplikasi_point_of_sales/core/repo/repositories.dart';
+import 'package:cash_whiz/blocs/list_product/list_product_bloc.dart';
+import 'package:cash_whiz/blocs/list_product/list_product_event.dart';
+import 'package:cash_whiz/blocs/list_product/list_product_state.dart';
+import 'package:cash_whiz/core/models/hive/product_model.dart';
+import 'package:cash_whiz/core/models/list_product_model.dart';
+import 'package:cash_whiz/core/repo/repositories.dart';
 import 'package:counter/counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -117,7 +117,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
           child: Column(
             children: [
               _topMenu(
-                title: 'Toko Bangunan Dua Putri',
+                title: 'CashWhiz App',
                 subTitle:
                     intl.DateFormat('dd-MMMM-yyyy').format(DateTime.now()),
                 action: _search(),

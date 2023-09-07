@@ -1,6 +1,6 @@
-import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_event.dart';
-import 'package:aplikasi_point_of_sales/blocs/list_product/list_product_state.dart';
-import 'package:aplikasi_point_of_sales/core/repo/repositories.dart';
+import 'package:cash_whiz/blocs/list_product/list_product_event.dart';
+import 'package:cash_whiz/blocs/list_product/list_product_state.dart';
+import 'package:cash_whiz/core/repo/repositories.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ListProductBloc extends Bloc<ListProductEvent, ListProductState> {

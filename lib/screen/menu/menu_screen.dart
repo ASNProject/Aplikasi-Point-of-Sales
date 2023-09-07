@@ -1,5 +1,5 @@
-import 'package:aplikasi_point_of_sales/core/models/hive/product_model.dart';
-import 'package:aplikasi_point_of_sales/widget/cards/list_product_card.dart';
+import 'package:cash_whiz/core/models/hive/product_model.dart';
+import 'package:cash_whiz/widget/cards/list_product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

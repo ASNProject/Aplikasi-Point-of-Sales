@@ -1,5 +1,5 @@
-import 'package:aplikasi_point_of_sales/screen/cashier/cashier_screen.dart';
-import 'package:aplikasi_point_of_sales/screen/menu/menu_screen.dart';
+import 'package:cash_whiz/screen/cashier/cashier_screen.dart';
+import 'package:cash_whiz/screen/menu/menu_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -157,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 10),
         const Text(
-          'POS App',
+          'CashWhiz',
           style: TextStyle(
             color: Colors.white,
             fontSize: 8,

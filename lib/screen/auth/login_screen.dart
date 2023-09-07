@@ -1,4 +1,4 @@
-import 'package:aplikasi_point_of_sales/core/router/app_routes.dart';
+import 'package:cash_whiz/core/router/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:go_router/go_router.dart';
@@ -123,13 +123,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildButtonLogin(BuildContext context) {
     return SizedBox(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      child: GFButton(size: GFSize.LARGE, text: 'Login', onPressed: () {
-        GoRouter.of(context).pushReplacementNamed(AppRoutes.homescreen);
-      }),
+      width: MediaQuery.of(context).size.width,
+      child: GFButton(
+          size: GFSize.LARGE,
+          text: 'Login',
+          onPressed: () {
+            GoRouter.of(context).pushReplacementNamed(AppRoutes.homescreen);
+          }),
     );
   }
 

@@ -1,4 +1,4 @@
-import 'package:aplikasi_point_of_sales/core/models/list_product_model.dart';
+import 'package:cash_whiz/core/models/list_product_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

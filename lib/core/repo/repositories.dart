@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:aplikasi_point_of_sales/core/models/list_product_model.dart';
+import 'package:cash_whiz/core/models/list_product_model.dart';
 import 'package:http/http.dart';
 
 class ListProductRepository {
