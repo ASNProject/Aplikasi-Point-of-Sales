@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Aplikasi Point of Sales",
+      "name": "CashWhiz",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "Aplikasi Point of Sales (profile mode)",
+      "name": "CashWhiz (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "Aplikasi Point of Sales (release mode)",
+      "name": "CashWhiz (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

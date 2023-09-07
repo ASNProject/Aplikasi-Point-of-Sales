@@ -1,8 +1,6 @@
 import 'package:cash_whiz/blocs/list_product/list_product_bloc.dart';
 import 'package:cash_whiz/blocs/list_product/list_product_event.dart';
-import 'package:cash_whiz/blocs/list_product/list_product_state.dart';
 import 'package:cash_whiz/core/models/hive/product_model.dart';
-import 'package:cash_whiz/core/models/list_product_model.dart';
 import 'package:cash_whiz/core/repo/repositories.dart';
 import 'package:counter/counter.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +96,6 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
         }
       }
     }
-    print('Hasilnya ${results.map((e) => e.name)}');
     return results;
   }
 
@@ -733,46 +730,47 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
 
   ///ONLINE OR OFFLINE
   // Online
-  _buildOnlineMode() {
-    return BlocBuilder<ListProductBloc, ListProductState>(
-      builder: (context, state) {
-        if (state is ListProductLoadingState) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (state is ListProductErrorState) {
-          return Center(
-            child: Text(state.error),
-          );
-        }
-        if (state is ListProductLoadedState) {
-          List<ListProductModel> listProduct = state.listProducts;
-          return Expanded(
-              child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: listProduct.length,
-            itemBuilder: (_, index) {
-              return Padding(
-                padding: const EdgeInsets.all(1),
-                child: _item(
-                  image: '${listProduct[index].image}',
-                  title: '${listProduct[index].product}',
-                  price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
-                      .format(listProduct[index].price),
-                  item: '${listProduct[index].description}',
-                ),
-              );
-            },
-          ));
-        }
-        return Container();
-      },
-    );
-  }
+
+  // _buildOnlineMode() {
+  //   return BlocBuilder<ListProductBloc, ListProductState>(
+  //     builder: (context, state) {
+  //       if (state is ListProductLoadingState) {
+  //         return const Center(
+  //           child: CircularProgressIndicator(),
+  //         );
+  //       }
+  //       if (state is ListProductErrorState) {
+  //         return Center(
+  //           child: Text(state.error),
+  //         );
+  //       }
+  //       if (state is ListProductLoadedState) {
+  //         List<ListProductModel> listProduct = state.listProducts;
+  //         return Expanded(
+  //             child: GridView.builder(
+  //           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+  //             crossAxisCount: 5,
+  //             childAspectRatio: 0.8,
+  //           ),
+  //           itemCount: listProduct.length,
+  //           itemBuilder: (_, index) {
+  //             return Padding(
+  //               padding: const EdgeInsets.all(1),
+  //               child: _item(
+  //                 image: '${listProduct[index].image}',
+  //                 title: '${listProduct[index].product}',
+  //                 price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
+  //                     .format(listProduct[index].price),
+  //                 item: '${listProduct[index].description}',
+  //               ),
+  //             );
+  //           },
+  //         ));
+  //       }
+  //       return Container();
+  //     },
+  //   );
+  // }
 
   // OfflineMode
   _buildOfflineMode() {
