@@ -46,6 +46,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   List<List<dynamic>> saveData = [];
   int? sumInput;
   String initialPriceValue = '';
+  String initialNote = '';
   double totalPaid = 0.0;
   String initialTotalPaid = '';
   List<ProductModel> searchResult = [];
@@ -149,18 +150,21 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                     String total;
                     double amount;
                     String image;
+                    String note;
                     if (saveData.isNotEmpty) {
                       List<dynamic> rowData = saveData[index];
                       product = rowData[0];
                       total = rowData[1];
                       image = rowData[3];
                       amount = double.parse(rowData[2].toString());
+                      note = rowData[4];
                       return _itemOrder(
                         image: image,
                         title: product,
                         qty: total,
                         price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
                             .format(amount),
+                        note: note,
                       );
                     } else {
                       return Container();
@@ -325,6 +329,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     required String title,
     required String qty,
     required String price,
+    required String note,
   }) {
     return InkWell(
       onTap: () {
@@ -359,16 +364,25 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                   Text(
                     title,
                     style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
                   Text(
-                    price,
+                    note,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -593,6 +607,21 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                     labelText: 'Harga',
                   ),
                 ),
+                const SizedBox(
+                  height: 8,
+                ),
+                TextFormField(
+                  onChanged: (value) {
+                    initialNote = value;
+                  },
+                  decoration: const InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                      color: Color(0xff1f2029),
+                    )),
+                    labelText: 'Keterangan',
+                  ),
+                ),
               ],
             ),
           ),
@@ -690,6 +719,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     _addItem(sumInput.toString());
     _addItem(totalPrice.toString());
     _addItem(image);
+    _addItem(initialNote);
     _saveItem(items);
   }
 
