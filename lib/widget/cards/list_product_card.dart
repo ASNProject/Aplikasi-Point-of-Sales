@@ -30,29 +30,33 @@ class ListProductCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            image!.isNotEmpty
-                ? Image.network(
-                    image ?? '-',
-                    width: MediaQuery.of(context).size.width * .05,
-                    height: MediaQuery.of(context).size.width * .05,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                        );
-                      }
-                    },
-                  )
-                : const Icon(
-                    Icons.image,
-                    size: 70,
-                  ),
+            const Icon(
+              Icons.image,
+              size: 70,
+            ),
+            // image!.isNotEmpty
+            //     ? Image.network(
+            //         image ?? '-',
+            //         width: MediaQuery.of(context).size.width * .05,
+            //         height: MediaQuery.of(context).size.width * .05,
+            //         loadingBuilder: (BuildContext context, Widget child,
+            //             ImageChunkEvent? loadingProgress) {
+            //           if (loadingProgress == null) {
+            //             return child;
+            //           } else {
+            //             return CircularProgressIndicator(
+            //               value: loadingProgress.expectedTotalBytes != null
+            //                   ? loadingProgress.cumulativeBytesLoaded /
+            //                       loadingProgress.expectedTotalBytes!
+            //                   : null,
+            //             );
+            //           }
+            //         },
+            //       )
+            //     : const Icon(
+            //         Icons.image,
+            //         size: 70,
+            //       ),
             const SizedBox(
               width: 8,
             ),

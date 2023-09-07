@@ -41,18 +41,21 @@ class CashierScreenContent extends StatefulWidget {
 class _CashierScreenContentState extends State<CashierScreenContent> {
   final TextEditingController _priceValue = TextEditingController();
   final TextEditingController _totalPaidController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<String> items = [];
   List<List<dynamic>> saveData = [];
   int? sumInput;
   String initialPriceValue = '';
   double totalPaid = 0.0;
   String initialTotalPaid = '';
+  List<ProductModel> searchResult = [];
 
   late final Box dataBox;
 
   @override
   void dispose() {
     _priceValue.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -65,6 +68,37 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     ]);
     _totalPaidController.text = '';
     dataBox = Hive.box('data_box');
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() async {
+    final query = _searchController.text.toLowerCase();
+    final result = await _searchProducts(query);
+    setState(() {
+      searchResult = result;
+    });
+  }
+
+  Future<List<ProductModel>> _searchProducts(String query) async {
+    final List<ProductModel> results = [];
+
+    for (var key in dataBox.keys) {
+      final productData = dataBox.get(key);
+      if (productData != null) {
+        final product = ProductModel(
+          name: productData.name,
+          description: productData.description,
+          price: productData.price,
+          imageUrl: productData.imageUrl,
+        );
+
+        if (product.name!.toLowerCase().contains(query)) {
+          results.add(product);
+        }
+      }
+    }
+    print('Hasilnya ${results.map((e) => e.name)}');
+    return results;
   }
 
   @override
@@ -310,8 +344,9 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
               width: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                  image: NetworkImage(image),
+                image: const DecorationImage(
+                  // image: NetworkImage(image),
+                  image: AssetImage('assets/items/image.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -386,8 +421,9 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: NetworkImage(image),
+                    image: const DecorationImage(
+                      // image: NetworkImage(image),
+                      image: AssetImage('assets/items/image.png'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -470,27 +506,43 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   }
 
   Widget _search() {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        width: double.infinity,
-        height: 40,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: const Color(0xff1f2029),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxHeight: 35),
+      child: TextFormField(
+        textDirection: TextDirection.rtl,
+        textAlignVertical: TextAlignVertical.top,
+        controller: _searchController,
+        textAlign: TextAlign.end,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w100,
         ),
-        child: const Row(
-          children: [
-            Icon(
-              Icons.search,
-              color: Colors.white54,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search),
+          prefixIconColor: Colors.white,
+          hintTextDirection: TextDirection.rtl,
+          hintText: 'Cari disini',
+          hintStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w100),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
+          fillColor: Colors.transparent,
+          filled: true,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: Colors.white,
             ),
-            SizedBox(width: 10),
-            Text(
-              'Cari disini...',
-              style: TextStyle(color: Colors.white54, fontSize: 11),
-            )
-          ],
-        ));
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _showInputDialogOrder(
@@ -711,9 +763,12 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
               crossAxisCount: 5,
               childAspectRatio: 0.8,
             ),
-            itemCount: dataBox.length,
+            itemCount:
+                searchResult.isNotEmpty ? searchResult.length : dataBox.length,
             itemBuilder: (_, index) {
-              var getData = box.getAt(index) as ProductModel;
+              var getData = searchResult.isNotEmpty
+                  ? searchResult[index]
+                  : box.getAt(index) as ProductModel;
               return Padding(
                 padding: const EdgeInsets.all(1),
                 child: _item(

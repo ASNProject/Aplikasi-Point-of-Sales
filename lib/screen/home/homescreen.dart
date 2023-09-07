@@ -16,9 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (pageActive) {
       case 'Cashier':
         return const CashierScreen();
-      case 'Menu':
+      case 'Produk':
         return const MenuScreen();
-      case 'History':
+      case 'Riwayat':
         return Container();
 
       default:
@@ -80,11 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.computer,
               ),
               _itemMenu(
-                menu: 'Menu',
+                menu: 'Produk',
                 icon: Icons.format_list_bulleted_rounded,
               ),
               _itemMenu(
-                menu: 'History',
+                menu: 'Riwayat',
                 icon: Icons.history_toggle_off_rounded,
               ),
               _itemMenu(
