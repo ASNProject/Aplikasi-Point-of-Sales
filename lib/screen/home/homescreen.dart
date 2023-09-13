@@ -1,5 +1,6 @@
 import 'package:cash_whiz/screen/cashier/cashier_screen.dart';
 import 'package:cash_whiz/screen/menu/menu_screen.dart';
+import 'package:cash_whiz/screen/sale/sale_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
         return const CashierScreen();
       case 'Produk':
         return const MenuScreen();
-      case 'Riwayat':
-        return Container();
+      case 'Penjualan':
+        return const SaleScreen();
 
       default:
         return const CashierScreen();
@@ -84,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icons.format_list_bulleted_rounded,
               ),
               _itemMenu(
-                menu: 'Riwayat',
+                menu: 'Penjualan',
                 icon: Icons.history_toggle_off_rounded,
               ),
               _itemMenu(

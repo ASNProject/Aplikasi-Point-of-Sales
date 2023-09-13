@@ -1,6 +1,7 @@
 import 'package:cash_whiz/blocs/list_product/list_product_bloc.dart';
 import 'package:cash_whiz/blocs/list_product/list_product_event.dart';
 import 'package:cash_whiz/core/models/hive/product_model.dart';
+import 'package:cash_whiz/core/models/hive/sale_model.dart';
 import 'package:cash_whiz/core/repo/repositories.dart';
 import 'package:counter/counter.dart';
 import 'package:flutter/material.dart';
@@ -50,6 +51,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
   List<ProductModel> searchResult = [];
 
   late final Box dataBox;
+  late final Box dataHostory;
 
   @override
   void dispose() {
@@ -67,6 +69,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     ]);
     _totalPaidController.text = '';
     dataBox = Hive.box('data_box');
+    dataHostory = Hive.box('data_history');
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -273,6 +276,22 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                               ),
                             ),
                             onPressed: () {
+                              if (saveData.isNotEmpty) {
+                                List<dynamic> rowData = saveData[0];
+                                String name = rowData[0];
+                                int quantity = int.parse(rowData[1].toString());
+                                double price =
+                                    double.parse(rowData[2].toString());
+                                String note = rowData[4];
+
+                                _createSale(
+                                  name,
+                                  quantity,
+                                  price,
+                                  note,
+                                );
+                              }
+
                               _clearData();
                             },
                             child: const Row(
@@ -812,5 +831,18 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
         }
       },
     );
+  }
+
+  _createSale(String? name, int? quantity, double? price, String? note) {
+    SaleModel newSale = SaleModel(
+      date: DateTime.now().toString(),
+      time: DateTime.timestamp().toString(),
+      name: name,
+      quantity: quantity,
+      price: price,
+      note: note,
+    );
+
+    dataHostory.add(newSale);
   }
 }
