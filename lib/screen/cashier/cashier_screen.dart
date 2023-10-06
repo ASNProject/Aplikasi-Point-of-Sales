@@ -9,6 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'dart:typed_data';
 
 class CashierScreen extends StatelessWidget {
   const CashierScreen({super.key});
@@ -163,7 +167,7 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                         title: product,
                         qty: total,
                         price: intl.NumberFormat.simpleCurrency(locale: 'id_ID')
-                            .format(amount),
+                            .format(amount / double.parse(total)),
                         note: note,
                       );
                     } else {
@@ -292,7 +296,34 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
                                 );
                               }
 
-                              _clearData();
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return Column(
+                                      children: [
+                                        Dialog(
+                                          child: Container(
+                                            height: 500,
+                                            width: 500,
+                                            child: PdfPreview(
+                                                build: (format) => _generatePdf(
+                                                    format,
+                                                    totalPaid,
+                                                    totalAmount)),
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            _clearData();
+                                          },
+                                          child: Text('Keluar'),
+                                        )
+                                      ],
+                                    );
+                                  });
+
+                              // _clearData();
                             },
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -844,5 +875,141 @@ class _CashierScreenContentState extends State<CashierScreenContent> {
     );
 
     dataHostory.add(newSale);
+  }
+
+  Future<Uint8List> _generatePdf(
+      PdfPageFormat format, double payment, double totalAmount) async {
+    final pdf = pw.Document(version: PdfVersion.pdf_1_5, compress: true);
+    final font = await PdfGoogleFonts.nunitoExtraLight();
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: format,
+        build: (context) {
+          return pw.Column(
+            children: [
+              pw.SizedBox(
+                width: double.infinity,
+                child: pw.FittedBox(
+                  child: pw.Text('Nota Pembelian',
+                      style: pw.TextStyle(font: font, fontSize: 12)),
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.ListView.builder(
+                itemCount: saveData.length,
+                itemBuilder: (_, index) {
+                  String product;
+                  String total;
+                  double amount;
+                  String image;
+                  String note;
+                  if (saveData.isNotEmpty) {
+                    List<dynamic> rowData = saveData[index];
+                    product = rowData[0];
+                    total = rowData[1];
+                    image = rowData[3];
+                    amount = double.parse(rowData[2].toString());
+                    note = rowData[4];
+                    return buildReceipt(
+                      product: product,
+                      total: total,
+                      amount: amount,
+                      note: note,
+                    );
+                    // pw.Column(
+                    //   children: [
+                    //     pw.Row(
+                    //       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    //       children: [
+                    //         pw.Text(product),
+                    //         pw.Row(
+                    //           children: [
+                    //             pw.Text('${total} x'),
+                    //             pw.Text(amount.toString()),
+                    //           ],
+                    //         )
+                    //       ],
+                    //     )
+                    //   ],
+                    // );
+                  } else {
+                    return pw.Container();
+                  }
+                },
+              ),
+              pw.SizedBox(height: 8),
+              pw.Divider(),
+              pw.SizedBox(height: 8),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Total'),
+                  pw.Text(
+                    totalAmount.toString(),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 8),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Dibayar'),
+                  pw.Text(
+                    totalPaid.toString(),
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 8),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Kembali'),
+                  pw.Text(
+                    '${totalPaid - totalAmount}',
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 50),
+              pw.Center(
+                child: pw.Text('Terimakasih atas kunjungan anda'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  buildReceipt({
+    required String product,
+    required String total,
+    required double amount,
+    required String note,
+  }) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.Text(product),
+            pw.Row(
+              children: [
+                pw.Text('${total} x'),
+                pw.Text('${amount / double.parse(total)}'),
+              ],
+            )
+          ],
+        ),
+        pw.Text(
+          note,
+          style: pw.TextStyle(fontSize: 8),
+        ),
+        pw.SizedBox(height: 8),
+      ],
+    );
   }
 }
